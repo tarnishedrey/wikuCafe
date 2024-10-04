@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
   itemContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center", // Center content vertically
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
@@ -37,6 +38,27 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   totalPriceText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  quantityContainer: {
+    flexDirection: "row",
+    alignItems: "center", // Center the quantity and buttons
+  },
+  quantityText: {
+    fontSize: 18,
+    paddingHorizontal: 10,
+  },
+  button: {
+    width: 30,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#ddd",
+    borderRadius: 5,
+  },
+  buttonText: {
     fontSize: 20,
     fontWeight: "bold",
     color: "#333",

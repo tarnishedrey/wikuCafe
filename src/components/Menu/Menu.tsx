@@ -33,7 +33,6 @@ const Menu = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false); // Track login state
   const [loading, setLoading] = useState<boolean>(true); // Track loading state
 
-  // Function to fetch menus
   const fetchMenus = async (token: string) => {
     try {
       const response: AxiosResponse = await axios.get(API_URL, {
@@ -74,11 +73,10 @@ const Menu = () => {
         Alert.alert("Error", "An unexpected error occurred.");
       }
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
-  // Check login state and fetch menus
   useEffect(() => {
     const checkLoginAndFetchMenus = async () => {
       const token = await AsyncStorage.getItem("token");
@@ -87,14 +85,13 @@ const Menu = () => {
         await fetchMenus(token);
       } else {
         setIsLoggedIn(false);
-        setLoading(false); // Stop loading if not logged in
+        setLoading(false);
       }
     };
 
     checkLoginAndFetchMenus();
   }, [isLoggedIn]);
 
-  // Helper function to render menu items
   const renderMenuItems = (type: "food" | "drink") => (
     <FlatList
       data={menus.filter((menu) => menu.type === type)}
@@ -133,35 +130,39 @@ const Menu = () => {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Drinks Section */}
       <View>
         <Text style={styles.header}>Drinks</Text>
         {renderMenuItems("drink")}
       </View>
 
-      {/* Food Section */}
       <View>
         <Text style={styles.header}>Food</Text>
         {renderMenuItems("food")}
       </View>
 
-      {/* Cart Summary and Navigation */}
       {orders.length > 0 && (
         <Pressable
           style={styles.totalContainer}
-          onPress={() =>
+          onPress={() => {
+            const menus = orders.map((order) => order.name);
+            const itemPrices = orders.map((order) => order.price);
+            const itemQuantities = orders.map((order) => order.quantity);
+
+            const total = orders.reduce(
+              (total, order) => total + order.price * order.quantity,
+              0
+            );
+
             router.push({
               pathname: "/Cart/Cart",
               params: {
-                menus: orders.map((order) => order.name).join(", "),
-                itemPrices: orders.map((order) => order.price).join(", "),
-                total: orders.reduce(
-                  (total, order) => total + order.price * order.quantity,
-                  0
-                ),
+                menus: menus.join(", "),
+                itemPrices: itemPrices.join(", "),
+                itemQuantities: itemQuantities.join(", "),
+                total,
               },
-            })
-          }
+            });
+          }}
         >
           <Text style={styles.cartTitle}>Cart | </Text>
           <View style={styles.cartInfo}>

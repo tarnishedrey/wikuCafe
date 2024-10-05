@@ -4,20 +4,36 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import styles from "./Style";
 
+interface UserData {
+  user_id: number;
+  user_name: string;
+  role: string;
+  maker_id: number;
+  created_at: string;
+  updated_at: string;
+}
+
 const Greet = () => {
   const [isLogged, setIsLogged] = useState(false);
   const [username, setUsername] = useState("");
+  const [userData, setUserData] = useState<UserData | null>(null);
   const router = useRouter();
 
-  // Check login state when component is mounted
   useEffect(() => {
     const checkLoginStatus = async () => {
       const token = await AsyncStorage.getItem("token");
       const storedUsername = await AsyncStorage.getItem("username");
+      const userDataString = await AsyncStorage.getItem("userData");
+      const userData: UserData | null = userDataString
+        ? JSON.parse(userDataString)
+        : null;
 
       if (token && storedUsername) {
         setUsername(storedUsername);
         setIsLogged(true);
+        if (userData) {
+          setUserData(userData);
+        }
       } else {
         setIsLogged(false);
       }
@@ -26,28 +42,34 @@ const Greet = () => {
     checkLoginStatus();
   }, []);
 
-  // Logout function
   const handleLogout = async () => {
     await AsyncStorage.removeItem("token");
     await AsyncStorage.removeItem("username");
-    setIsLogged(false); // Update state to reflect logout
-    setUsername(""); // Clear username
+    await AsyncStorage.removeItem("userData");
+    setIsLogged(false);
+    setUsername("");
+    setUserData(null);
     Alert.alert("Logged out", "You have been logged out.");
-
-    // Automatically refresh the page after logout
-    router.replace("/"); // Navigate to the same page to force a refresh
+    router.replace("/");
   };
 
   return (
     <View style={styles.headerContainer}>
       {isLogged ? (
         <>
-          <Text style={styles.headerTitle}>
-            Hallo <Text style={styles.headerText}>{username}</Text>
-          </Text>
-          <Pressable style={styles.logoutButton} onPress={handleLogout}>
-            <Text style={styles.logoutButtonText}>Logout</Text>
-          </Pressable>
+          <View style={styles.headerRow}>
+            <Text style={styles.headerTitle}>
+              Hallo <Text style={styles.headerText}>{username}</Text>
+            </Text>
+            <Pressable style={styles.logoutButton} onPress={handleLogout}>
+              <Text style={styles.logoutButtonText}>Logout</Text>
+            </Pressable>
+          </View>
+          {userData && (
+            <View style={styles.roleContainer}>
+              <Text style={styles.roleText}>Role: {userData.role}</Text>
+            </View>
+          )}
         </>
       ) : (
         <Pressable

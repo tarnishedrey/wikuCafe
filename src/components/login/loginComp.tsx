@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import styles from "./Style"; // Import your styles
+import styles from "./Style";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const API_URL = "https://ukkcafe.smktelkom-mlg.sch.id/api/login?makerID";
 
@@ -25,24 +26,34 @@ const Login = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            makerID: 47, // Custom header
+            makerID: 47,
           },
         }
       );
 
       if (response.status === 200) {
         const token = response.data.access_token;
-        console.log(token);
+        const user = response.data.user;
+        const role = user.role;
 
-        // Store token and username in AsyncStorage
         await AsyncStorage.setItem("token", token);
-        await AsyncStorage.setItem("username", username); // Save username for greeting
+        await AsyncStorage.setItem("username", user.username);
+        await AsyncStorage.setItem("userData", JSON.stringify(user));
 
         Alert.alert("Success", "Login successful!");
-        router.push("/"); // Redirect after successful login
+
+        // Redirect based on role
+        if (role === "cashier") {
+          router.push("/");
+        } else if (role === "manager") {
+          router.push("/manager");
+        } else if (role === "admin") {
+          router.push("/admin");
+        } else {
+          Alert.alert("Error", "Unknown role");
+        }
       } else {
         console.log("token failed");
-
         Alert.alert(
           "Login failed",
           response.data.message || "Invalid credentials."
@@ -54,7 +65,7 @@ const Login = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Login</Text>
       <TextInput
         placeholder="Username"
@@ -72,7 +83,7 @@ const Login = () => {
       <Pressable style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </Pressable>
-    </View>
+    </SafeAreaView>
   );
 };
 

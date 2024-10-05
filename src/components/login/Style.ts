@@ -2,42 +2,43 @@ import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: "center",
-    padding: 20,
-    backgroundColor: "#f5f5f5", // Light background color
+    padding: 16,
+    backgroundColor: "#f0f0f0",
   },
   title: {
-    fontSize: 28,
-    fontWeight: "bold",
+    fontSize: 24,
+    fontWeight: "600",
     marginBottom: 20,
     textAlign: "center",
-    color: "#333", // Darker text color
+    color: "#222",
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc", // Light border color
-    borderRadius: 5,
-    marginBottom: 15,
-    padding: 10,
-    backgroundColor: "white", // White background for input fields
+    borderColor: "#ccc",
+    borderRadius: 8,
+    marginBottom: 12,
+    padding: 14,
+    backgroundColor: "white",
     fontSize: 16,
   },
   button: {
-    backgroundColor: "#007BFF", // Blue background for the login button
-    paddingVertical: 12,
-    borderRadius: 5,
-    alignItems: "center", // Center text in button
+    backgroundColor: "#007BFF",
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 10,
   },
   buttonText: {
-    color: "white", // White text for button
+    color: "white",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 18,
   },
   errorText: {
-    color: "red", // Red color for error messages
-    marginBottom: 10,
+    color: "red",
+    marginBottom: 12,
     textAlign: "center",
+    fontSize: 14,
   },
 });
 

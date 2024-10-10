@@ -105,6 +105,46 @@ const styles = StyleSheet.create({
     padding: 12,
     backgroundColor: "#f8f8f8",
   },
+
+  quantityBadge: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    backgroundColor: "#FF4B4B",
+    borderRadius: 12,
+    width: 24,
+    height: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  quantityText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  description: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 4,
+  },
+  addToCartButton: {
+    backgroundColor: "#4CAF50",
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 5,
+  },
+  addToCartButtonText: {
+    color: "white",
+    textAlign: "center",
+  },
 });
 
 export default styles;

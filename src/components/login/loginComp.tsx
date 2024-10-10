@@ -42,7 +42,6 @@ const Login = () => {
 
         Alert.alert("Success", "Login successful!");
 
-        // Redirect based on role
         if (role === "cashier") {
           router.push("/");
         } else if (role === "manager") {

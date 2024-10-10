@@ -3,8 +3,8 @@ import React from "react";
 import { View, Text, FlatList, Alert, TouchableOpacity } from "react-native";
 import axios, { AxiosResponse } from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router"; // Import useRouter for navigation
-import styles from "./Style"; // Import your styles
+import { useRouter } from "expo-router";
+import styles from "./Style";
 
 interface User {
   user_id: number;
@@ -30,14 +30,14 @@ const ShowUsers: React.FC = () => {
         return;
       }
 
-      const response: AxiosResponse<User[]> = await axios.get(API_URL, {
+      const response: AxiosResponse = await axios.get(API_URL, {
         headers: {
           Authorization: `Bearer ${token}`,
           makerID: "47",
         },
       });
 
-      console.log("Fetched users:", response.data); // Log the fetched data
+      console.log("Fetched users:", response.data);
       setUsers(response.data);
     } catch (error) {
       Alert.alert("Error", "Failed to fetch users. Please try again later.");
@@ -51,29 +51,32 @@ const ShowUsers: React.FC = () => {
     fetchUsers();
   }, []);
 
+  const handleUserPress = async (user: User) => {
+    try {
+      await AsyncStorage.setItem("userData", JSON.stringify(user)); // Save full user object
+      router.push("/editUser"); // Navigate to editUser page
+    } catch (error) {
+      console.error("Error saving user data to AsyncStorage:", error);
+    }
+  };
+
   const renderItem = ({ item }: { item: User }) => (
-    <TouchableOpacity
-      style={styles.userCard}
-      onPress={() => {
-        router.push({
-          pathname: "/editUser",
-          params: { userId: item.user_id.toString() }, // Pass as a string
-        });
-      }}
-    >
-      <Text style={styles.userText}>User ID: {item.user_id}</Text>
-      <Text style={styles.userText}>Name: {item.user_name}</Text>
-      <Text style={styles.userText}>Role: {item.role}</Text>
-      <Text style={styles.userText}>Username: {item.username}</Text>
-      <Text style={styles.userText}>Created At: {item.created_at}</Text>
-      <Text style={styles.userText}>Updated At: {item.updated_at}</Text>
+    <TouchableOpacity onPress={() => handleUserPress(item)}>
+      <View style={styles.userCard}>
+        <Text>User ID: {item.user_id}</Text>
+        <Text>Name: {item.user_name}</Text>
+        <Text>Role: {item.role}</Text>
+        <Text>Username: {item.username}</Text>
+        <Text>Created At: {item.created_at}</Text>
+        <Text>Updated At: {item.updated_at}</Text>
+      </View>
     </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
+    <View>
       {loading ? (
-        <Text style={styles.loadingText}>Loading users...</Text>
+        <Text>Loading users...</Text>
       ) : (
         <FlatList
           data={users}

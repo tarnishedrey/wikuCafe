@@ -59,7 +59,7 @@ const Greet = () => {
         <>
           <View style={styles.headerRow}>
             <Text style={styles.headerTitle}>
-              Hallo <Text style={styles.headerText}>{username}</Text>
+              Hallo <Text style={styles.headerText}>{userData?.user_name}</Text>
             </Text>
             <Pressable style={styles.logoutButton} onPress={handleLogout}>
               <Text style={styles.logoutButtonText}>Logout</Text>

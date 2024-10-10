@@ -7,9 +7,7 @@ const Layout = () => {
   return (
     <CartProvider>
       <SafeAreaView style={{ flex: 1 }}>
-        {/* Add a StatusBar for better UX */}
         <StatusBar barStyle="dark-content" />
-        {/* Slot is where other components will be injected by the router */}
         <Slot />
       </SafeAreaView>
     </CartProvider>

@@ -1,12 +1,23 @@
-import { View, Text } from "react-native";
-import React from "react";
+import { View, Text, Button, TouchableOpacity, ScrollView } from "react-native";
+import React, { useState } from "react";
 
-const admin = () => {
+import AdminShowUsers from "../components/ShowUser/ShowUser";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Greet from "../components/Welcome/Greet";
+import AddMenu from "../components/AddMenu/AddMenu";
+import Register from "../components/Register/Register";
+
+const Admin = () => {
   return (
-    <View>
-      <Text>admin</Text>
-    </View>
+    <SafeAreaView>
+      <Greet />
+      <ScrollView>
+        <AddMenu />
+        <Register />
+        <AdminShowUsers />
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
-export default admin;
+export default Admin;

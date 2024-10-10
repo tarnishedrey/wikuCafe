@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useState } from "react";
 
-type CartItem = {
+interface CartItem {
+  menu_id: string;
   name: string;
   price: number;
+  quantity: number;
   imageUrl: any;
   type: "food" | "drink";
-  quantity: number; // Add quantity field
-};
+}
 
 interface CartContextType {
   orders: CartItem[];

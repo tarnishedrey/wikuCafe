@@ -1,45 +1,35 @@
 import { StyleSheet } from "react-native";
 
-const styles = StyleSheet.create({
+export default StyleSheet.create({
   container: {
+    padding: 20,
     justifyContent: "center",
-    padding: 16,
-    backgroundColor: "#f0f0f0",
   },
   title: {
     fontSize: 24,
-    fontWeight: "600",
+    fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
-    color: "#222",
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    marginBottom: 12,
-    padding: 14,
-    backgroundColor: "white",
-    fontSize: 16,
+    borderColor: "#ddd",
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 10,
   },
   button: {
-    backgroundColor: "#007BFF",
-    paddingVertical: 14,
-    borderRadius: 8,
+    backgroundColor: "#007AFF",
+    padding: 15,
+    borderRadius: 5,
     alignItems: "center",
-    marginTop: 10,
+  },
+  buttonDisabled: {
+    backgroundColor: "#999",
   },
   buttonText: {
-    color: "white",
+    color: "#fff",
+    fontSize: 16,
     fontWeight: "bold",
-    fontSize: 18,
-  },
-  errorText: {
-    color: "red",
-    marginBottom: 12,
-    textAlign: "center",
-    fontSize: 14,
   },
 });
-
-export default styles;

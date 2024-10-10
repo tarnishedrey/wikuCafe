@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Menu from "../components/Menu/Menu";
 import Greet from "../components/Welcome/Greet";
 import { CartProvider } from "../contexts/CartContext";
-import Cart from "./Cart/Cart";
+import Cart from "./Cart";
 
 const index = () => {
   return (

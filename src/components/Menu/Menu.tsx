@@ -15,6 +15,7 @@ import { useCart } from "@/src/contexts/CartContext";
 import { useRouter } from "expo-router";
 
 export type CartItem = {
+  menu_id: string;
   name: string;
   price: number;
   imageUrl: string;
@@ -43,9 +44,10 @@ const Menu = () => {
       });
 
       const menuItems = response.data.data.map((item: any) => ({
+        menu_id: item.id,
         name: item.menu_name,
         price: item.price,
-        imageUrl: `https://ukkcafe.smktelkom-mlg.sch.id/api/${item.menu_image_name}`,
+        imageUrl: `https://ukkcafe.smktelkom-mlg.sch.id/${item.menu_image_name}`,
         type: item.type.toLowerCase() as "food" | "drink",
         description: item.menu_description,
         quantity: 1,
@@ -144,22 +146,14 @@ const Menu = () => {
         <Pressable
           style={styles.totalContainer}
           onPress={() => {
-            const menus = orders.map((order) => order.name);
-            const itemPrices = orders.map((order) => order.price);
-            const itemQuantities = orders.map((order) => order.quantity);
-
-            const total = orders.reduce(
-              (total, order) => total + order.price * order.quantity,
-              0
-            );
-
             router.push({
-              pathname: "/Cart/Cart",
+              pathname: "/Cart",
               params: {
-                menus: menus.join(", "),
-                itemPrices: itemPrices.join(", "),
-                itemQuantities: itemQuantities.join(", "),
-                total,
+                orders: JSON.stringify(orders), // Pass the full order details
+                total: orders.reduce(
+                  (total, order) => total + order.price * order.quantity,
+                  0
+                ),
               },
             });
           }}

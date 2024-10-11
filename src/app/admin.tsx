@@ -1,6 +1,5 @@
-import { View, Text, Button, TouchableOpacity, ScrollView } from "react-native";
-import React, { useState } from "react";
-
+import { View, ScrollView } from "react-native";
+import React from "react";
 import AdminShowUsers from "../components/ShowUser/ShowUser";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Greet from "../components/Welcome/Greet";
@@ -9,9 +8,9 @@ import Register from "../components/Register/Register";
 
 const Admin = () => {
   return (
-    <SafeAreaView>
-      <Greet />
-      <ScrollView>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, padding: 10 }}>
+        <Greet />
         <AddMenu />
         <Register />
         <AdminShowUsers />

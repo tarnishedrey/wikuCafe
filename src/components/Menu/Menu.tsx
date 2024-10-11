@@ -41,15 +41,9 @@ const Menu = () => {
         },
       });
 
-      // Debug: Lihat struktur data response
-      console.log("Raw API Response:", response.data.data[0]);
-
       const menuItems = response.data.data.map((item: any) => {
-        // Debug: Log setiap item
-        console.log("Processing item:", item);
-
         return {
-          menu_id: Number(item.menu_id), // Coba ganti dari item.id ke item.menu_id
+          menu_id: Number(item.menu_id),
           name: item.menu_name,
           price: Number(item.price),
           imageUrl: `https://ukkcafe.smktelkom-mlg.sch.id/${item.menu_image_name}`,
@@ -67,8 +61,6 @@ const Menu = () => {
       setLoading(false);
     }
   };
-
-  console.log(menus);
 
   useEffect(() => {
     const checkLoginAndFetchMenus = async () => {

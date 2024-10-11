@@ -119,17 +119,103 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
   },
-  checkoutButton: {
-    backgroundColor: "#4CAF50",
-    padding: 16,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 8,
+
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginVertical: 10,
+    color: "#333",
   },
-  checkoutButtonText: {
-    color: "white",
+
+  tableItem: {
+    padding: 15,
+    marginHorizontal: 5,
+    borderRadius: 8,
+    backgroundColor: "#f5f5f5",
+    minWidth: 120,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+
+  selectedTable: {
+    backgroundColor: "#007AFF",
+    borderColor: "#0056b3",
+  },
+
+  tableName: {
     fontSize: 16,
     fontWeight: "bold",
+    color: "#333",
+    marginBottom: 4,
+  },
+
+  tableStatus: {
+    fontSize: 14,
+    color: "#666",
+  },
+
+  input: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    padding: 10,
+    marginVertical: 10,
+  },
+
+  errorText: {
+    color: "red",
+    marginVertical: 5,
+  },
+
+  orderSection: {
+    padding: 10,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    marginTop: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+
+  checkoutButton: {
+    backgroundColor: "#007AFF",
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 10,
+  },
+
+  checkoutButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  tablesContainer: {
+    marginVertical: 10,
+    height: 80, // Ensure there's enough height for the tables
+  },
+
+  tablesContent: {
+    paddingHorizontal: 5,
+  },
+  selectedTableText: {
+    color: "#fff",
+  },
+  emptyTables: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#666",
+    padding: 16,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 8,
+    marginHorizontal: 8,
   },
 });
 

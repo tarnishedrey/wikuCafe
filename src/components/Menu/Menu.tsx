@@ -41,15 +41,23 @@ const Menu = () => {
         },
       });
 
-      const menuItems = response.data.data.map((item: any) => ({
-        menu_id: Number(item.id),
-        name: item.menu_name,
-        price: Number(item.price),
-        imageUrl: `https://ukkcafe.smktelkom-mlg.sch.id/${item.menu_image_name}`,
-        type: item.type.toLowerCase() as "food" | "drink",
-        description: item.menu_description,
-        quantity: 0, // Initialize quantity
-      }));
+      // Debug: Lihat struktur data response
+      console.log("Raw API Response:", response.data.data[0]);
+
+      const menuItems = response.data.data.map((item: any) => {
+        // Debug: Log setiap item
+        console.log("Processing item:", item);
+
+        return {
+          menu_id: Number(item.menu_id), // Coba ganti dari item.id ke item.menu_id
+          name: item.menu_name,
+          price: Number(item.price),
+          imageUrl: `https://ukkcafe.smktelkom-mlg.sch.id/${item.menu_image_name}`,
+          type: item.type.toLowerCase() as "food" | "drink",
+          description: item.menu_description,
+          quantity: 0,
+        };
+      });
 
       setMenus(menuItems);
     } catch (error: any) {
@@ -59,6 +67,8 @@ const Menu = () => {
       setLoading(false);
     }
   };
+
+  console.log(menus);
 
   useEffect(() => {
     const checkLoginAndFetchMenus = async () => {
@@ -77,24 +87,23 @@ const Menu = () => {
 
   const addToCart = (selectedItem: CartItem) => {
     setOrders((prevOrders) => {
-      // Deep copy current orders
-      const currentOrders = [...prevOrders];
-
-      // Find if item already exists in cart
-      const existingItemIndex = currentOrders.findIndex(
+      // Cari item yang sudah ada di cart
+      const existingItemIndex = prevOrders.findIndex(
         (item) => item.menu_id === selectedItem.menu_id
       );
 
       if (existingItemIndex !== -1) {
-        // If item exists, just update its quantity
-        currentOrders[existingItemIndex] = {
-          ...currentOrders[existingItemIndex],
-          quantity: currentOrders[existingItemIndex].quantity + 1,
+        // Buat salinan array orders yang baru
+        const updatedOrders = [...prevOrders];
+        // Update hanya item yang dipilih
+        updatedOrders[existingItemIndex] = {
+          ...selectedItem, // Gunakan data dari selectedItem untuk memastikan data terbaru
+          quantity: prevOrders[existingItemIndex].quantity + 1,
         };
-        return currentOrders;
+        return updatedOrders;
       } else {
-        // If item doesn't exist, add it with quantity 1
-        return [...currentOrders, { ...selectedItem, quantity: 1 }];
+        // Tambahkan item baru dengan quantity 1
+        return [...prevOrders, { ...selectedItem, quantity: 1 }];
       }
     });
   };
@@ -148,6 +157,28 @@ const Menu = () => {
     );
   }
 
+  const navigateToCart = () => {
+    // Filter out items with 0 quantity
+    const validOrders = orders.filter((item) => item.quantity > 0);
+
+    // Ensure we're only passing necessary data
+    const simplifiedOrders = validOrders.map(
+      ({ menu_id, name, price, quantity }) => ({
+        menu_id,
+        name,
+        price,
+        quantity,
+      })
+    );
+
+    router.push({
+      pathname: "/Cart",
+      params: {
+        orders: JSON.stringify(simplifiedOrders),
+      },
+    });
+  };
+
   return (
     <ScrollView style={styles.container}>
       <View>
@@ -161,17 +192,7 @@ const Menu = () => {
       </View>
 
       {orders.length > 0 && (
-        <Pressable
-          style={styles.totalContainer}
-          onPress={() => {
-            // Make sure we only send orders with quantity > 0
-            const validOrders = orders.filter((item) => item.quantity > 0);
-            router.push({
-              pathname: "/Cart",
-              params: { orders: JSON.stringify(validOrders) },
-            });
-          }}
-        >
+        <Pressable style={styles.totalContainer} onPress={navigateToCart}>
           <Text style={styles.cartTitle}>Cart | </Text>
           <View style={styles.cartInfo}>
             <Text style={styles.cartItems}>

@@ -97,6 +97,40 @@ const styles = StyleSheet.create({
     color: "#666",
     marginTop: 30,
   },
+  quantityControls: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  quantityButton: {
+    backgroundColor: "#e0e0e0",
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  quantityButtonText: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  footer: {
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#e0e0e0",
+  },
+  checkoutButton: {
+    backgroundColor: "#4CAF50",
+    padding: 16,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 8,
+  },
+  checkoutButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });
 
 export default styles;

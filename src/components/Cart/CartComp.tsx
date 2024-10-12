@@ -123,28 +123,73 @@ const CartComp = () => {
 
       const totalPrice = calculateTotal(orderData.detail);
       const htmlContent = `
-        <html>
-          <body>
-            <h1>Order Receipt</h1>
-            <p>Order ID: ${responseData.order_id || "N/A"}</p>
-            <p>Order Date: ${responseData.order_date || "N/A"}</p>
-            <p>Customer: ${responseData.customer_name || "N/A"}</p>
-            <p>Table: ${responseData.table_id || "N/A"}</p>
-            <p>Cashier: ${cashierName || "N/A"}</p>
-            <h2>Items:</h2>
-            <ul>
-              ${orderData.detail
-                .map(
-                  (item: any) => `
-                <li>${item.name} - Quantity: ${item.quantity} - Price: Rp. ${item.price}</li>
-              `
-                )
-                .join("")}
-            </ul>
-            <p><strong>Total: Rp. ${totalPrice.toFixed(2)}</strong></p>
-          </body>
-        </html>
-      `;
+  <html>
+    <head>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+          color: #333;
+        }
+        h1 {
+          text-align: center;
+          color: #2E8B57;
+        }
+        h2 {
+          color: #2E8B57;
+        }
+        p {
+          font-size: 14px;
+          line-height: 1.5;
+        }
+        ul {
+          list-style-type: none;
+          padding: 0;
+        }
+        li {
+          margin: 5px 0;
+          padding: 10px;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          background-color: #f9f9f9;
+        }
+        .total {
+          font-weight: bold;
+          font-size: 16px;
+          color: #d9534f;
+        }
+        .receipt {
+          border: 1px solid #ddd;
+          padding: 15px;
+          border-radius: 5px;
+          background-color: #f2f2f2;
+          box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+      </style>
+    </head>
+    <body>
+      <div class="receipt">
+        <h1>Wikusama Cafe</h1>
+        <p>Order ID: ${responseData.order_id || "N/A"}</p>
+        <p>Order Date: ${responseData.order_date || "N/A"}</p>
+        <p>Customer: ${responseData.customer_name || "N/A"}</p>
+        <p>Table: ${responseData.table_id || "N/A"}</p>
+        <p>Cashier: ${cashierName || "N/A"}</p>
+        <h2>Items:</h2>
+        <ul>
+          ${orderData.detail
+            .map(
+              (item: any) => `
+              <li>${item.name} - Quantity: ${item.quantity} - Price: Rp. ${item.price}</li>
+            `
+            )
+            .join("")}
+        </ul>
+        <p class="total">Total: Rp. ${totalPrice.toFixed(2)}</p>
+      </div>
+    </body>
+  </html>
+`;
 
       const { uri } = await Print.printToFileAsync({ html: htmlContent });
       console.log("PDF file saved to:", uri);

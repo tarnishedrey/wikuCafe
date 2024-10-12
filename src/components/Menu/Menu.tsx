@@ -11,6 +11,7 @@ import axios, { AxiosResponse } from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from "./Style";
 import { useRouter } from "expo-router";
+import ShowOrder from "../ShowOrder/ShowOrder";
 
 export type CartItem = {
   menu_id: number;
@@ -173,6 +174,7 @@ const Menu = () => {
 
   return (
     <ScrollView style={styles.container}>
+      <ShowOrder />
       <View>
         <Text style={styles.header}>Drinks</Text>
         {renderMenuItems("drink")}

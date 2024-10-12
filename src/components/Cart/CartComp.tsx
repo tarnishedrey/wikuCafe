@@ -58,7 +58,7 @@ const CartComp = () => {
     try {
       const token = await AsyncStorage.getItem("token");
       const response = await axios.get(
-        "https://ukkcafe.smktelkom-mlg.sch.id/api/table",
+        "https://ukkcafe.smktelkom-mlg.sch.id/api/table/available",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -66,12 +66,8 @@ const CartComp = () => {
           },
         }
       );
-      // Filter only available tables
-      const availableTables = response.data.filter(
-        (table: Table) => table.is_available
-      );
 
-      setTables(availableTables);
+      setTables(response.data);
     } catch (error) {
       console.error("Error fetching tables:", error);
       setError("Failed to fetch tables");

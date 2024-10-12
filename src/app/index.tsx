@@ -14,7 +14,6 @@ const index = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Greet />
-      <ShowOrder />
 
       <Menu />
     </SafeAreaView>

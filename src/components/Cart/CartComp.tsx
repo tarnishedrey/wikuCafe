@@ -12,6 +12,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import styles from "./Style";
+import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
 
 interface CartItem {
   menu_id: number;
@@ -28,6 +30,26 @@ interface Table {
   is_available: boolean;
 }
 
+interface OrderResponse {
+  status: string;
+  message: string;
+  data: {
+    order: {
+      order_id: number;
+      order_date: string;
+      user_id: number;
+      table_id: number;
+      customer_name: string;
+      status: string;
+      maker_id: number;
+      created_at: string;
+      updated_at: string;
+    };
+  };
+}
+
+const MAKER_ID = "47";
+
 const CartComp = () => {
   const params = useLocalSearchParams();
   const router = useRouter();
@@ -39,6 +61,7 @@ const CartComp = () => {
   const [error, setError] = useState<string>("");
   const [token, setToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [cashierName, setCashierName] = useState<string>("");
 
   useEffect(() => {
     if (params.orders) {
@@ -53,6 +76,15 @@ const CartComp = () => {
     }
     fetchTables();
   }, [params.orders]);
+
+  useEffect(() => {
+    const fetchCashierName = async () => {
+      const name = await AsyncStorage.getItem("cashiername");
+      setCashierName(name || "Unknown Cashier");
+    };
+
+    fetchCashierName();
+  }, []);
 
   const fetchTables = async () => {
     try {
@@ -74,6 +106,70 @@ const CartComp = () => {
     }
   };
 
+  const generatePDF = async (
+    orderData: any,
+    responseData: OrderResponse["data"]["order"]
+  ) => {
+    try {
+      console.log(
+        "GeneratePDF - Order Data:",
+        JSON.stringify(orderData, null, 2)
+      );
+      console.log(
+        "GeneratePDF - Response Data:",
+        JSON.stringify(responseData, null, 2)
+      );
+      console.log("GeneratePDF - Cashier Name:", cashierName);
+
+      const totalPrice = calculateTotal(orderData.detail);
+      const htmlContent = `
+        <html>
+          <body>
+            <h1>Order Receipt</h1>
+            <p>Order ID: ${responseData.order_id || "N/A"}</p>
+            <p>Order Date: ${responseData.order_date || "N/A"}</p>
+            <p>Customer: ${responseData.customer_name || "N/A"}</p>
+            <p>Table: ${responseData.table_id || "N/A"}</p>
+            <p>Cashier: ${cashierName || "N/A"}</p>
+            <h2>Items:</h2>
+            <ul>
+              ${orderData.detail
+                .map(
+                  (item: any) => `
+                <li>${item.name} - Quantity: ${item.quantity} - Price: Rp. ${item.price}</li>
+              `
+                )
+                .join("")}
+            </ul>
+            <p><strong>Total: Rp. ${totalPrice.toFixed(2)}</strong></p>
+          </body>
+        </html>
+      `;
+
+      const { uri } = await Print.printToFileAsync({ html: htmlContent });
+      console.log("PDF file saved to:", uri);
+
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri, {
+          UTI: ".pdf",
+          mimeType: "application/pdf",
+        });
+      } else {
+        Alert.alert(
+          "Sharing not available",
+          "PDF has been generated but sharing is not available on this device."
+        );
+      }
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      Alert.alert("Error", "Failed to generate PDF");
+    }
+  };
+
+  const calculateTotal = (items: any[]): number => {
+    return items.reduce((total, item) => total + item.price * item.quantity, 0);
+  };
+
   const handleSubmitOrder = async () => {
     if (!selectedTable) {
       setError("Please select a table");
@@ -93,14 +189,15 @@ const CartComp = () => {
         throw new Error("Authentication data missing");
       }
 
-      // Format the order data exactly as required by the API
       const orderData = {
-        user_id: userId.toString(), // As string
-        table_id: selectedTable.toString(), // As string
+        user_id: userId.toString(),
+        table_id: selectedTable.toString(),
         customer_name: customerName.trim(),
         detail: groupedOrders.map((item) => ({
-          menu_id: item.menu_id.toString(), // As string
-          quantity: item.quantity.toString(), // As string
+          menu_id: item.menu_id.toString(),
+          quantity: item.quantity.toString(),
+          name: item.name,
+          price: item.price,
         })),
       };
 
@@ -109,30 +206,40 @@ const CartComp = () => {
         JSON.stringify(orderData, null, 2)
       );
 
-      const response = await axios.post(
+      const response = await axios.post<OrderResponse>(
         "https://ukkcafe.smktelkom-mlg.sch.id/api/order",
         orderData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            makerID: "47",
+            makerID: MAKER_ID,
             "Content-Type": "application/json",
           },
         }
       );
 
-      console.log("API Response:", response.data);
+      console.log("API Response:", JSON.stringify(response.data, null, 2));
+      console.log(
+        "Response Data Order:",
+        JSON.stringify(response.data.data.order, null, 2)
+      );
+      console.log("Cashier Name:", cashierName);
 
       if (response.data.status === "success") {
-        Alert.alert("Success", "Order submitted successfully", [
-          {
-            text: "OK",
-            onPress: () => {
-              setGroupedOrders([]);
-              router.back();
+        await generatePDF(orderData, response.data.data.order);
+        Alert.alert(
+          "Success",
+          "Order submitted successfully and PDF generated",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                setGroupedOrders([]);
+                router.back();
+              },
             },
-          },
-        ]);
+          ]
+        );
       } else {
         throw new Error(response.data.message || "Failed to submit order");
       }
@@ -221,6 +328,8 @@ const CartComp = () => {
     (total, item) => total + item.price * item.quantity,
     0
   );
+
+  console.log();
 
   return (
     <View style={styles.container}>

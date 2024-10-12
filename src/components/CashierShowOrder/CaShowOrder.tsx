@@ -201,15 +201,17 @@ const CaShowOrder: React.FC = () => {
                   <Text style={styles.itemTextLeft}>
                     {item.menu_name} x{item.quantity}
                   </Text>
-                  <Text style={styles.itemTextRight}>Price: ${item.price}</Text>
                   <Text style={styles.itemTextRight}>
-                    Subtotal: ${item.order_detail_price}
+                    Price: Rp.{item.price}
+                  </Text>
+                  <Text style={styles.itemTextRight}>
+                    Subtotal: Rp.{item.order_detail_price}
                   </Text>
                 </View>
               ))}
               <View style={styles.totalPriceContainer}>
                 <Text style={styles.totalPriceText}>
-                  Total Price: ${totalPrice}
+                  Total Price: Rp.{totalPrice}
                 </Text>
               </View>
             </View>

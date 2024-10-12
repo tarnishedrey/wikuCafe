@@ -8,17 +8,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    backgroundColor: "#007acc",
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 8,
-    marginVertical: 12,
+    backgroundColor: "#4CAF50",
+    padding: 12,
+    borderRadius: 6,
+    alignItems: "center",
+    justifyContent: "center",
   },
+
   buttonText: {
-    color: "#fff",
     fontSize: 16,
+    color: "#fff",
     fontWeight: "bold",
-    textAlign: "center",
   },
 });
 

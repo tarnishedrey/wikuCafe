@@ -8,6 +8,7 @@ import Register from "../components/Register/Register";
 import AdminMenu from "../components/AdminMenu/AdminMenu";
 import { useRouter } from "expo-router";
 import useAuth from "../hooks/useAuth";
+import AdmTable from "../components/AdmTable/AdmTable";
 
 const Admin = () => {
   return (
@@ -18,6 +19,7 @@ const Admin = () => {
         <AdminMenu />
         <Register />
         <AdminShowUsers />
+        <AdmTable />
       </ScrollView>
     </SafeAreaView>
   );

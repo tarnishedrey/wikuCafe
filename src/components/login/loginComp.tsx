@@ -34,7 +34,7 @@ const Login = () => {
       const response = await axios.post(API_URL, loginData, {
         headers: {
           "Content-Type": "application/json",
-          makerID: "47", // Changed to string as some APIs are strict about types
+          makerID: "47",
         },
       });
 
@@ -55,12 +55,12 @@ const Login = () => {
           role
         );
 
-        // Store auth data
         await Promise.all([
           AsyncStorage.setItem("role", role),
           AsyncStorage.setItem("token", token),
           AsyncStorage.setItem("user_id", JSON.stringify(user_id)),
           AsyncStorage.setItem("username", user.username),
+          AsyncStorage.setItem("cashiername", user.user_name),
           AsyncStorage.setItem("userData", JSON.stringify(user)),
         ]);
 

@@ -68,6 +68,7 @@ const Greet = () => {
           {userData && (
             <View style={styles.roleContainer}>
               <Text style={styles.roleText}>Role: {userData.role}</Text>
+              <Text style={styles.roleText}>userID: {userData.user_id}</Text>
             </View>
           )}
         </>

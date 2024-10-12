@@ -11,6 +11,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRouter } from "expo-router";
 
 type FileData = {
   uri: string;
@@ -19,6 +20,7 @@ type FileData = {
 };
 
 const AddMenu = () => {
+  const router = useRouter();
   const [menuName, setMenuName] = useState("");
   const [menuType, setMenuType] = useState("");
   const [menuDescription, setMenuDescription] = useState("");
@@ -119,9 +121,8 @@ const AddMenu = () => {
         timeout: 10000,
       });
 
-      console.log("Response:", response.data); // Debug log
       Alert.alert("Success", "Menu item added successfully!");
-
+      router.replace("/admin");
       setMenuName("");
       setMenuType("");
       setMenuDescription("");

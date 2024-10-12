@@ -9,6 +9,7 @@ import {
 import React, { useState } from "react";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 
 type UserRole = "cashier" | "admin" | "manager";
 
@@ -84,7 +85,7 @@ const Register = () => {
 
         if (response.ok) {
           Alert.alert("Success", "Registration successful!");
-          // Add navigation or other success handling here
+          router.replace("/admin");
         } else {
           Alert.alert("Error", data.message || "Registration failed");
         }

@@ -5,7 +5,6 @@ const styles = StyleSheet.create({
     flex: 1, // This makes sure the cart summary stays at the bottom
   },
   menuContainer: {
-    flex: 1, // Ensures the menu takes all available space before the cart
     padding: 16,
     backgroundColor: "#f5f5f5",
   },
@@ -75,6 +74,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: 24,
   },
   cartTitle: {
     fontSize: 18,

@@ -51,11 +51,13 @@ const Login = () => {
           "Storing auth data - Token:",
           token ? "exists" : "missing",
           "UserId:",
-          user_id
+          user_id,
+          role
         );
 
         // Store auth data
         await Promise.all([
+          AsyncStorage.setItem("role", role),
           AsyncStorage.setItem("token", token),
           AsyncStorage.setItem("user_id", JSON.stringify(user_id)),
           AsyncStorage.setItem("username", user.username),
@@ -65,11 +67,14 @@ const Login = () => {
         // Verify storage
         const storedToken = await AsyncStorage.getItem("token");
         const storedUserId = await AsyncStorage.getItem("user_id");
+        const storedRole = await AsyncStorage.getItem("role");
         console.log(
           "Verified stored data - Token:",
           storedToken ? "exists" : "missing",
           "UserId:",
-          storedUserId
+          storedUserId,
+          "role:",
+          storedRole
         );
 
         Alert.alert("Success", "Login successful!");

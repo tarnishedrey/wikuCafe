@@ -13,7 +13,7 @@ const Layout = () => {
         const role = await AsyncStorage.getItem("role");
 
         if (token && role) {
-          // User is authenticated, redirect based on role
+          // udah login nih terus di cek rolenya yekan
           switch (role) {
             case "cashier":
               router.replace("/");
@@ -25,18 +25,14 @@ const Layout = () => {
               router.replace("/admin");
               break;
             default:
-              console.error("Unknown role:", role);
-              // Optionally, you could log out the user here if the role is unknown
-              // await AsyncStorage.multiRemove(["token", "role"]);
+              console.error("lu siapa hayo");
               router.replace("/login");
           }
         } else {
-          // User is not authenticated, redirect to login
           router.replace("/login");
         }
       } catch (error) {
         console.error("Error checking auth status:", error);
-        // If there's an error, redirect to login as a fallback
         router.replace("/login");
       }
     };

@@ -5,7 +5,7 @@ const { width } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: "#f0f0f0", // Lighter background for cleaner look
+    backgroundColor: "#f0f0f0",
     flex: 1,
   },
   header: {
@@ -13,19 +13,19 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     color: "#333",
-    textAlign: "center", // Center the header for better emphasis
+    textAlign: "center",
   },
   cartItem: {
     padding: 15,
     marginBottom: 15,
-    backgroundColor: "#fff", // White background for the cart items
+    backgroundColor: "#fff",
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 4,
     },
-    shadowOpacity: 0.1, // Reduced shadow for a more subtle effect
+    shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 3,
   },
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     color: "#333",
-    textAlign: "center", // Center total price for emphasis
+    textAlign: "center",
   },
   emptyCart: {
     textAlign: "center",
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   },
   tablesContainer: {
     marginVertical: 10,
-    height: 80, // Ensure there's enough height for the tables
+    height: 80,
   },
 
   tablesContent: {

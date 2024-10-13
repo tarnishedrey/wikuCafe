@@ -7,6 +7,8 @@ import {
   TextInput,
   StyleSheet,
   Alert,
+  ActivityIndicator,
+  SafeAreaView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -122,14 +124,14 @@ const AdmTable = () => {
 
   const renderTableItem = ({ item }: { item: Table }) => (
     <View style={styles.tableItem}>
-      <Text>Table ID: {item.table_id}</Text>
-      <Text>Table Number: {item.table_number}</Text>
-      <Text>Available: {item.is_available}</Text>
-      <Text>Maker ID: {item.maker_id}</Text>
-      <Text>Created at: {new Date(item.created_at).toLocaleString()}</Text>
-      <Text>Updated at: {new Date(item.updated_at).toLocaleString()}</Text>
+      <View style={styles.tableInfo}>
+        <Text style={styles.tableNumber}>Table {item.table_number}</Text>
+        <Text style={styles.tableStatus}>
+          Status: {item.is_available === "true" ? "Available" : "Occupied"}
+        </Text>
+      </View>
       <Pressable style={styles.editButton} onPress={() => handleEdit(item)}>
-        <Text>Edit</Text>
+        <Text style={styles.editButtonText}>Edit</Text>
       </Pressable>
     </View>
   );
@@ -139,6 +141,7 @@ const AdmTable = () => {
 
     return (
       <View style={styles.editForm}>
+        <Text style={styles.editFormTitle}>Edit Table</Text>
         <TextInput
           style={styles.input}
           value={editingTable.table_number}
@@ -148,7 +151,7 @@ const AdmTable = () => {
           placeholder="Table Number"
         />
         <Pressable
-          style={styles.button}
+          style={[styles.button, styles.toggleButton]}
           onPress={() =>
             setEditingTable({
               ...editingTable,
@@ -157,34 +160,47 @@ const AdmTable = () => {
             })
           }
         >
-          <Text>
+          <Text style={styles.buttonText}>
             {editingTable.is_available === "true"
               ? "Set Unavailable"
               : "Set Available"}
           </Text>
         </Pressable>
-        <Pressable style={styles.button} onPress={handleSave}>
-          <Text>Save</Text>
-        </Pressable>
-        <Pressable style={styles.button} onPress={() => setEditingTable(null)}>
-          <Text>Cancel</Text>
-        </Pressable>
+        <View style={styles.editFormButtons}>
+          <Pressable
+            style={[styles.button, styles.saveButton]}
+            onPress={handleSave}
+          >
+            <Text style={styles.buttonText}>Save</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.button, styles.cancelButton]}
+            onPress={() => setEditingTable(null)}
+          >
+            <Text style={styles.buttonText}>Cancel</Text>
+          </Pressable>
+        </View>
       </View>
     );
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Table Management</Text>
-      <TextInput
-        style={styles.input}
-        value={newTableNumber}
-        onChangeText={setNewTableNumber}
-        placeholder="Enter new table number"
-      />
-      <Pressable style={styles.button} onPress={handleAddTable}>
-        <Text>Add Table</Text>
-      </Pressable>
+      <View style={styles.addTableContainer}>
+        <TextInput
+          style={styles.input}
+          value={newTableNumber}
+          onChangeText={setNewTableNumber}
+          placeholder="Enter new table number"
+        />
+        <Pressable
+          style={[styles.button, styles.addButton]}
+          onPress={handleAddTable}
+        >
+          <Text style={styles.buttonText}>Add Table</Text>
+        </Pressable>
+      </View>
       {editingTable ? (
         renderEditForm()
       ) : (
@@ -192,11 +208,16 @@ const AdmTable = () => {
           data={tables}
           renderItem={renderTableItem}
           keyExtractor={(item) => item.table_id.toString()}
+          contentContainerStyle={styles.listContainer}
         />
       )}
-      {loading && <Text>Loading...</Text>}
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+        </View>
+      )}
       {error && <Text style={styles.errorText}>Error: {error}</Text>}
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -204,46 +225,124 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: "#f5f5f5",
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
     marginBottom: 20,
+    color: "#333",
+  },
+  addTableContainer: {
+    flexDirection: "row",
+    marginBottom: 20,
+  },
+  input: {
+    flex: 1,
+    backgroundColor: "white",
+    padding: 12,
+    borderRadius: 8,
+    marginRight: 10,
+    fontSize: 16,
+  },
+  listContainer: {
+    paddingBottom: 20,
   },
   tableItem: {
-    backgroundColor: "#f0f0f0",
-    padding: 10,
+    backgroundColor: "white",
+    padding: 15,
     marginBottom: 10,
-    borderRadius: 5,
+    borderRadius: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  tableInfo: {
+    flex: 1,
+  },
+  tableNumber: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  tableStatus: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 4,
   },
   editButton: {
     backgroundColor: "#4CAF50",
     padding: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    marginTop: 10,
+    borderRadius: 6,
+  },
+  editButtonText: {
+    color: "white",
+    fontWeight: "bold",
   },
   editForm: {
-    backgroundColor: "#f0f0f0",
-    padding: 20,
-    borderRadius: 5,
-  },
-  input: {
     backgroundColor: "white",
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
+    padding: 20,
+    borderRadius: 8,
+    marginBottom: 20,
+  },
+  editFormTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 15,
+    color: "#333",
+  },
+  editFormButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   button: {
-    backgroundColor: "#2196F3",
-    padding: 10,
-    borderRadius: 5,
+    padding: 12,
+    borderRadius: 6,
     alignItems: "center",
     marginTop: 10,
   },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  addButton: {
+    backgroundColor: "#2196F3",
+    minWidth: 100,
+  },
+  saveButton: {
+    backgroundColor: "#4CAF50",
+    flex: 1,
+    marginRight: 5,
+  },
+  cancelButton: {
+    backgroundColor: "#f44336",
+    flex: 1,
+    marginLeft: 5,
+  },
+  toggleButton: {
+    backgroundColor: "#FF9800",
+  },
+  loadingContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
+  },
   errorText: {
-    color: "red",
+    color: "#f44336",
     marginTop: 10,
+    fontSize: 16,
+    textAlign: "center",
   },
 });
 

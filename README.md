@@ -1,13 +1,22 @@
-# Welcome to your Expo app 👋
+# Cafe Management System with Expo 🚀
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Welcome to the **Cafe Management System**, an application built using [Expo](https://expo.dev) and designed to streamline cafe operations for cashiers, admins, and managers.
 
-## Get started
+## Getting Started
 
-1. Install dependencies
+Follow these steps to set up and start developing the app.
+
+### Prerequisites
+
+Ensure you have **Node.js** and **npm** installed. If not, download and install them [here](https://nodejs.org/).
+
+### Installation
+
+1. **Install dependencies:**
 
    ```bash
    npm install
+
    ```
 
 2. Start the app

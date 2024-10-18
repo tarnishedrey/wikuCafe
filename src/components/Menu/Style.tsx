@@ -2,11 +2,12 @@ import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
   screenContainer: {
-    flex: 1, // This makes sure the cart summary stays at the bottom
+    flex: 1,
+    backgroundColor: "#f5f5f5",
   },
   menuContainer: {
+    flexGrow: 1,
     padding: 16,
-    backgroundColor: "#f5f5f5",
   },
   header: {
     fontSize: 22,
@@ -52,19 +53,20 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 15,
   },
+
   cartContainer: {
     position: "absolute",
-    bottom: 0,
     left: 0,
     right: 0,
+    bottom: 0,
     padding: 10,
-    backgroundColor: "#fff",
-    elevation: 6,
+    backgroundColor: "transparent",
   },
   totalContainer: {
     padding: 16,
     backgroundColor: "#fff",
-    borderRadius: 15,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
     borderWidth: 1,
     borderColor: "#ddd",
     shadowColor: "#000",
@@ -74,27 +76,30 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 24,
   },
+
   cartTitle: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#333",
   },
+
   cartInfo: {
     flexDirection: "row",
     alignItems: "center",
   },
+
+  cartItems: {
+    fontSize: 14,
+    color: "#666",
+    marginRight: 12,
+    marginTop: 2,
+  },
+
   cartTotal: {
     fontSize: 16,
     fontWeight: "600",
     color: "#ff5733",
-  },
-  cartItems: {
-    fontSize: 14,
-    color: "#666",
-    marginRight: 20,
-    marginTop: 2,
   },
   errorMessage: {
     color: "red",

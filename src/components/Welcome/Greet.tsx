@@ -1,7 +1,9 @@
-import { View, Text, Alert, Pressable } from "react-native";
 import React, { useEffect, useState } from "react";
+import { View, Text, Alert, Pressable, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
+import { Feather } from "@expo/vector-icons";
 import styles from "./Style";
 
 interface UserData {
@@ -15,25 +17,20 @@ interface UserData {
 
 const Greet = () => {
   const [isLogged, setIsLogged] = useState(false);
-  const [username, setUsername] = useState("");
   const [userData, setUserData] = useState<UserData | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     const checkLoginStatus = async () => {
       const token = await AsyncStorage.getItem("token");
-      const storedUsername = await AsyncStorage.getItem("username");
       const userDataString = await AsyncStorage.getItem("userData");
       const userData: UserData | null = userDataString
         ? JSON.parse(userDataString)
         : null;
 
-      if (token && storedUsername) {
-        setUsername(storedUsername);
+      if (token && userData) {
         setIsLogged(true);
-        if (userData) {
-          setUserData(userData);
-        }
+        setUserData(userData);
       } else {
         setIsLogged(false);
       }
@@ -43,46 +40,44 @@ const Greet = () => {
   }, []);
 
   const handleLogout = async () => {
-    await AsyncStorage.removeItem("token");
-    await AsyncStorage.removeItem("username");
-    await AsyncStorage.removeItem("userData");
+    await AsyncStorage.multiRemove(["token", "username", "userData"]);
     setIsLogged(false);
-    setUsername("");
     setUserData(null);
     Alert.alert("Logged out", "You have been logged out.");
     router.replace("/");
   };
 
   return (
-    <View style={styles.headerContainer}>
+    <LinearGradient
+      colors={["#000000", "#2d3436"]}
+      style={styles.headerContainer}
+    >
       {isLogged ? (
-        <>
-          <View style={styles.headerRow}>
-            <Text style={styles.headerTitle}>
-              Hallo <Text style={styles.headerText}>{userData?.user_name}</Text>
-            </Text>
-            <Pressable style={styles.logoutButton} onPress={handleLogout}>
-              <Text style={styles.logoutButtonText}>Logout</Text>
-            </Pressable>
-          </View>
-          {userData && (
-            <View style={styles.roleContainer}>
-              <Text style={styles.roleText}>Role: {userData.role}</Text>
-              <Text style={styles.roleText}>userID: {userData.user_id}</Text>
+        <View style={styles.loggedInContainer}>
+          <View style={styles.userInfoContainer}>
+            <View style={styles.textContainer}>
+              <Text style={styles.welcomeText}>Welcome back,</Text>
+              <Text style={styles.usernameText}>{userData?.user_name}</Text>
+              <Text style={styles.roleText}>{userData?.role}</Text>
             </View>
-          )}
-        </>
+          </View>
+
+          <Pressable style={styles.logoutButton} onPress={handleLogout}>
+            <Feather name="log-out" size={24} color="white" />
+          </Pressable>
+        </View>
       ) : (
-        <Pressable
-          style={styles.loginButton}
-          onPress={() => {
-            router.push("/login");
-          }}
-        >
-          <Text style={styles.loginButtonText}>Login</Text>
-        </Pressable>
+        <View style={styles.loggedOutContainer}>
+          <Text style={styles.loginPromptText}>Please log in to continue</Text>
+          <Pressable
+            style={styles.loginButton}
+            onPress={() => router.push("/login")}
+          >
+            <Text style={styles.loginButtonText}>Login</Text>
+          </Pressable>
+        </View>
       )}
-    </View>
+    </LinearGradient>
   );
 };
 

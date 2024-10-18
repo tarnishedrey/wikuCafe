@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -6,11 +6,14 @@ import {
   ScrollView,
   TouchableOpacity,
   Pressable,
+  Alert,
 } from "react-native";
 import axios, { AxiosResponse } from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import styles from "./Style"; // Import styles from the separate file
+import styles from "./Style";
 import { router } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Greet from "../Welcome/Greet";
 
 interface OrderData {
   order_id: number;
@@ -43,22 +46,55 @@ interface OrderDetailResponse {
   total_price: number;
 }
 
-const API_URL = "https://ukkcafe.smktelkom-mlg.sch.id/api/order/57";
-const MAKER_ID = "47";
+interface StatusUpdateResponse {
+  status: string;
+  message: string;
+}
+
+const BASE_URL = "https://ukkcafe.smktelkom-mlg.sch.id/api/order";
+const MAKER_ID = "62";
 
 const CaShowOrder: React.FC = () => {
   const [orders, setOrders] = useState<OrderData[]>([]);
-  const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
-  const [orderDetails, setOrderDetails] = useState<OrderDetailItem[]>([]);
+  const [orderDetails, setOrderDetails] = useState<{
+    [key: number]: OrderDetailItem[];
+  }>({});
+  const [totalPrices, setTotalPrices] = useState<{ [key: number]: number }>({});
+  const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  const scrollViewRef = useRef<ScrollView>(null);
 
   useEffect(() => {
-    fetchOrders();
+    const initializeComponent = async () => {
+      try {
+        const storedUserId = await AsyncStorage.getItem("user_id");
+        if (storedUserId) {
+          const parsedUserId = JSON.parse(storedUserId);
+          setUserId(parsedUserId);
+          await fetchOrders(parsedUserId);
+        } else {
+          setError("User ID not found");
+          return;
+        }
+      } catch (err) {
+        setError("Failed to retrieve user ID");
+        return;
+      }
+    };
+
+    initializeComponent();
   }, []);
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (userId: string) => {
+    if (!userId) {
+      setError("User ID not available");
+      setLoading(false);
+      return;
+    }
+
     try {
       const token = await AsyncStorage.getItem("token");
       if (!token) {
@@ -67,6 +103,7 @@ const CaShowOrder: React.FC = () => {
         return;
       }
 
+      const API_URL = `${BASE_URL}/${userId}`;
       const orderResponse: AxiosResponse<ApiResponse> = await axios.get(
         API_URL,
         {
@@ -82,6 +119,7 @@ const CaShowOrder: React.FC = () => {
         Array.isArray(orderResponse.data.data)
       ) {
         setOrders(orderResponse.data.data);
+        await fetchAllOrderDetails(orderResponse.data.data);
       } else {
         setError("No orders found or unexpected response format");
       }
@@ -92,45 +130,54 @@ const CaShowOrder: React.FC = () => {
     }
   };
 
-  const fetchOrderDetails = async (orderId: number) => {
+  const fetchAllOrderDetails = async (orders: OrderData[]) => {
     try {
-      setLoading(true);
       const token = await AsyncStorage.getItem("token");
       if (!token) {
         setError("No authentication token available");
         return;
       }
 
-      const detailsResponse: AxiosResponse<OrderDetailResponse> =
-        await axios.get(
-          `https://ukkcafe.smktelkom-mlg.sch.id/api/orderdetail/${orderId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              makerID: MAKER_ID,
-            },
-          }
-        );
+      const fetchedDetails: { [key: number]: OrderDetailItem[] } = {};
+      const fetchedTotalPrices: { [key: number]: number } = {};
 
-      if (
-        detailsResponse.data.status === "success" &&
-        Array.isArray(detailsResponse.data.data)
-      ) {
-        setOrderDetails(detailsResponse.data.data);
-        setTotalPrice(detailsResponse.data.total_price);
-      } else {
-        setError("No order details found or unexpected response format");
-      }
+      await Promise.all(
+        orders.map(async (order) => {
+          try {
+            const detailsResponse: AxiosResponse<OrderDetailResponse> =
+              await axios.get(
+                `https://ukkcafe.smktelkom-mlg.sch.id/api/orderdetail/${order.order_id}`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    makerID: MAKER_ID,
+                  },
+                }
+              );
+
+            if (
+              detailsResponse.data.status === "success" &&
+              Array.isArray(detailsResponse.data.data)
+            ) {
+              fetchedDetails[order.order_id] = detailsResponse.data.data;
+              fetchedTotalPrices[order.order_id] =
+                detailsResponse.data.total_price;
+            }
+          } catch (err) {
+            console.warn(`Failed to fetch details for order ${order.order_id}`);
+          }
+        })
+      );
+
+      setOrderDetails(fetchedDetails);
+      setTotalPrices(fetchedTotalPrices);
     } catch (err) {
-      setError("Failed to fetch order details");
-    } finally {
-      setLoading(false);
+      setError("Failed to fetch all order details");
     }
   };
 
-  const handleOrderPress = (order: OrderData) => {
-    setSelectedOrder(order);
-    fetchOrderDetails(order.order_id);
+  const handleOrderPress = (orderId: number) => {
+    setExpandedOrderId(expandedOrderId === orderId ? null : orderId);
   };
 
   if (loading) {
@@ -149,76 +196,124 @@ const CaShowOrder: React.FC = () => {
     );
   }
 
+  const updateOrderStatus = async (orderId: number, newStatus: string) => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) {
+        Alert.alert("Error", "No authentication token available");
+        return;
+      }
+
+      const response: AxiosResponse<StatusUpdateResponse> = await axios.put(
+        `${BASE_URL}/${orderId}/status`,
+        { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            makerID: MAKER_ID,
+          },
+        }
+      );
+
+      if (response.data.status === "success") {
+        Alert.alert("Success", `Order status updated to ${newStatus}`);
+        setOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            order.order_id === orderId ? { ...order, status: newStatus } : order
+          )
+        );
+        setExpandedOrderId(null);
+      } else {
+        Alert.alert("Error", "Failed to update order status");
+      }
+    } catch (err) {
+      Alert.alert("Error", "An error occurred while updating the status");
+    }
+  };
+
+  const handleUpdateStatusPress = (orderId: number, currentStatus: string) => {
+    const newStatus = currentStatus === "paid" ? "pending" : "paid";
+    updateOrderStatus(orderId, newStatus);
+  };
+
+  const getStatusStyle = (status: string) => {
+    return status.toLowerCase() === "paid"
+      ? styles.paidStatus
+      : styles.pendingStatus;
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Orders</Text>
-      <Pressable
-        onPress={() => {
-          router.back();
-        }}
-      >
-        <Text>go back</Text>
-      </Pressable>
-      {orders.map((order) => (
-        <TouchableOpacity
-          key={order.order_id}
-          onPress={() => handleOrderPress(order)}
-          style={styles.orderItem}
-        >
-          <Text style={styles.orderText}>Order ID: {order.order_id}</Text>
-          <Text style={styles.orderText}>Customer: {order.customer_name}</Text>
-          <Text style={styles.orderText}>Date: {order.order_date}</Text>
-          <Text style={styles.orderText}>Status: {order.status}</Text>
-        </TouchableOpacity>
-      ))}
-      {selectedOrder && (
-        <View style={styles.orderDetails}>
-          <Text style={styles.subtitle}>Selected Order Details</Text>
-          <Text style={styles.detailText}>
-            Order ID: {selectedOrder.order_id}
-          </Text>
-          <Text style={styles.detailText}>
-            Customer: {selectedOrder.customer_name}
-          </Text>
-          <Text style={styles.detailText}>
-            Date: {selectedOrder.order_date}
-          </Text>
-          <Text style={styles.detailText}>
-            Table Number: {selectedOrder.table_number}
-          </Text>
-          <Text style={styles.detailText}>Status: {selectedOrder.status}</Text>
-          <Text style={styles.detailText}>
-            Created At: {selectedOrder.created_at}
-          </Text>
-          <Text style={styles.detailText}>
-            Updated At: {selectedOrder.updated_at}
-          </Text>
-          {orderDetails.length > 0 && (
-            <View>
-              <Text style={styles.subtitle}>Order Items:</Text>
-              {orderDetails.map((item, index) => (
-                <View key={index} style={styles.itemRow}>
-                  <Text style={styles.itemTextLeft}>
-                    {item.menu_name} x{item.quantity}
-                  </Text>
-                  <Text style={styles.itemTextRight}>
-                    Price: Rp.{item.price}
-                  </Text>
-                  <Text style={styles.itemTextRight}>
-                    Subtotal: Rp.{item.order_detail_price}
+    <SafeAreaView>
+      <Text style={styles.title}>Orders history</Text>
+      <ScrollView style={styles.container}>
+        {orders.map((order) => (
+          <View key={order.order_id}>
+            <TouchableOpacity
+              onPress={() => handleOrderPress(order.order_id)}
+              style={styles.orderItem}
+            >
+              <Text style={styles.orderText}>Order ID: {order.order_id}</Text>
+              <Text style={styles.orderText}>
+                Customer: {order.customer_name}
+              </Text>
+              <Text style={styles.orderText}>Date: {order.order_date}</Text>
+              <Text style={[styles.orderText, getStatusStyle(order.status)]}>
+                Status: {order.status}
+              </Text>
+            </TouchableOpacity>
+
+            {expandedOrderId === order.order_id && (
+              <View style={styles.orderDetails}>
+                <Text style={styles.detailText}>
+                  Table Number: {order.table_number}
+                </Text>
+                <Text style={styles.detailText}>
+                  Created At: {order.created_at}
+                </Text>
+                <Text style={styles.detailText}>
+                  Updated At: {order.updated_at}
+                </Text>
+                <Text style={styles.subtitle}>Order Items:</Text>
+                {orderDetails[order.order_id]?.map((item, index) => (
+                  <View key={index} style={styles.itemRow}>
+                    <Text style={styles.itemTextLeft}>
+                      {item.menu_name} x{item.quantity}
+                    </Text>
+                    <Text style={styles.itemTextRight}>
+                      Price: Rp.{item.price}
+                    </Text>
+                    <Text style={styles.itemTextRight}>
+                      Subtotal: Rp.{item.order_detail_price}
+                    </Text>
+                  </View>
+                ))}
+                <View style={styles.totalPriceContainer}>
+                  <Text style={styles.totalPriceText}>
+                    Total Price: Rp.{totalPrices[order.order_id]}
                   </Text>
                 </View>
-              ))}
-              <View style={styles.totalPriceContainer}>
-                <Text style={styles.totalPriceText}>
-                  Total Price: Rp.{totalPrice}
-                </Text>
+                {order.status.toLowerCase() === "paid" ? (
+                  <View style={styles.updateButtonPaid}>
+                    <Text style={styles.updateButtonText}>
+                      The order is already paid
+                    </Text>
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.updateButton}
+                    onPress={() =>
+                      handleUpdateStatusPress(order.order_id, order.status)
+                    }
+                  >
+                    <Text style={styles.updateButtonText}>Set to Paid</Text>
+                  </TouchableOpacity>
+                )}
               </View>
-            </View>
-          )}
-        </View>
-      )}
-    </ScrollView>
+            )}
+          </View>
+        ))}
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

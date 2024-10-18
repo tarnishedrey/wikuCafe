@@ -48,7 +48,7 @@ interface OrderResponse {
   };
 }
 
-const MAKER_ID = "47";
+const MAKER_ID = "62";
 
 const CartComp = () => {
   const params = useLocalSearchParams();
@@ -94,7 +94,7 @@ const CartComp = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            makerID: "47",
+            makerID: "62",
           },
         }
       );

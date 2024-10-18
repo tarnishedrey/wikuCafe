@@ -2,65 +2,71 @@ import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
   headerContainer: {
-    paddingVertical: 20,
-    paddingHorizontal: 16,
-    alignItems: "flex-start", // Align all items to the start
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
-    backgroundColor: "#f8f9fa",
-    width: "100%", // Ensure full width for better layout control
+    paddingVertical: 30,
+    paddingHorizontal: 20,
+
+    height: 150,
+    overflow: "hidden",
   },
-  headerRow: {
+
+  loggedInContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    height: "100%",
     width: "100%",
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
   },
-  headerTitle: {
-    fontSize: 26,
+  userInfoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  textContainer: {
+    justifyContent: "center",
+  },
+  welcomeText: {
+    fontSize: 16,
+    color: "#E3E3E3",
+    marginBottom: 5,
+  },
+  usernameText: {
+    fontSize: 24,
     fontWeight: "bold",
-    color: "#212529",
-  },
-  headerText: {
-    fontSize: 20,
-    color: "#333",
-    marginVertical: 4,
-  },
-  roleContainer: {
-    marginTop: 5,
-    alignSelf: "flex-start", // Align role container to the start
-    width: "100%", // Ensure full width for role text
+    color: "white",
+    marginBottom: 5,
   },
   roleText: {
-    fontSize: 18,
-    color: "#6c757d",
-    textAlign: "left", // Ensure text is left aligned
+    fontSize: 16,
+    color: "#E3E3E3",
+    fontStyle: "italic",
   },
   logoutButton: {
-    backgroundColor: "#dc3545",
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-
-    borderRadius: 5,
+    padding: 10,
+    borderRadius: 50,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
   },
-  logoutButtonText: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
+  loggedOutContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+  },
+  loginPromptText: {
     fontSize: 18,
+    color: "white",
+    marginBottom: 20,
   },
   loginButton: {
-    backgroundColor: "#007BFF",
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 5,
-    marginTop: 12,
-    width: "100%",
+    backgroundColor: "white",
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
   },
   loginButtonText: {
-    color: "white",
+    color: "#4c669f",
     fontWeight: "bold",
-    textAlign: "center",
+    fontSize: 16,
   },
 });
 

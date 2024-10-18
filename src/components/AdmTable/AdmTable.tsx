@@ -42,7 +42,7 @@ const AdmTable = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            makerID: "47",
+            makerID: "62",
           },
         }
       );
@@ -74,7 +74,7 @@ const AdmTable = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            makerID: "47",
+            makerID: "62",
           },
         }
       );
@@ -106,7 +106,7 @@ const AdmTable = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            makerID: "47",
+            makerID: "62",
             "Content-Type": "application/json",
           },
         }
@@ -150,22 +150,7 @@ const AdmTable = () => {
           }
           placeholder="Table Number"
         />
-        <Pressable
-          style={[styles.button, styles.toggleButton]}
-          onPress={() =>
-            setEditingTable({
-              ...editingTable,
-              is_available:
-                editingTable.is_available === "true" ? "false" : "true",
-            })
-          }
-        >
-          <Text style={styles.buttonText}>
-            {editingTable.is_available === "true"
-              ? "Set Unavailable"
-              : "Set Available"}
-          </Text>
-        </Pressable>
+
         <View style={styles.editFormButtons}>
           <Pressable
             style={[styles.button, styles.saveButton]}

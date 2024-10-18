@@ -6,12 +6,14 @@ import {
   Image,
   Pressable,
   ScrollView,
+  SafeAreaView,
 } from "react-native";
 import axios, { AxiosResponse } from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from "./Style";
 import { useRouter } from "expo-router";
-import ShowOrder from "../ShowOrder/ShowOrder";
+
+import { LinearGradient } from "expo-linear-gradient";
 
 export type CartItem = {
   menu_id: number;
@@ -38,7 +40,7 @@ const Menu = () => {
       const response: AxiosResponse = await axios.get(API_URL, {
         headers: {
           Authorization: `Bearer ${token}`,
-          makerID: "47",
+          makerID: "62",
         },
       });
 
@@ -80,22 +82,19 @@ const Menu = () => {
 
   const addToCart = (selectedItem: CartItem) => {
     setOrders((prevOrders) => {
-      // Cari item yang sudah ada di cart
       const existingItemIndex = prevOrders.findIndex(
         (item) => item.menu_id === selectedItem.menu_id
       );
 
       if (existingItemIndex !== -1) {
-        // Buat salinan array orders yang baru
         const updatedOrders = [...prevOrders];
-        // Update hanya item yang dipilih
+
         updatedOrders[existingItemIndex] = {
-          ...selectedItem, // Gunakan data dari selectedItem untuk memastikan data terbaru
+          ...selectedItem,
           quantity: prevOrders[existingItemIndex].quantity + 1,
         };
         return updatedOrders;
       } else {
-        // Tambahkan item baru dengan quantity 1
         return [...prevOrders, { ...selectedItem, quantity: 1 }];
       }
     });
@@ -118,8 +117,9 @@ const Menu = () => {
           >
             <Image style={styles.image} source={{ uri: item.imageUrl }} />
             <Text style={styles.foodName}>{item.name}</Text>
-            <Text style={styles.foodPrice}>Rp. {item.price}</Text>
             <Text style={styles.description}>{item.description}</Text>
+            <Text style={styles.foodPrice}>Rp. {item.price}</Text>
+
             {quantity > 0 && (
               <View style={styles.quantityBadge}>
                 <Text style={styles.quantityText}>{quantity}</Text>
@@ -173,36 +173,38 @@ const Menu = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <ShowOrder />
-      <View>
-        <Text style={styles.header}>Drinks</Text>
-        {renderMenuItems("drink")}
-      </View>
+    <SafeAreaView style={styles.screenContainer}>
+      <ScrollView style={styles.menuContainer}>
+        <View>
+          <Text style={styles.header}>Drinks</Text>
+          {renderMenuItems("drink")}
+        </View>
 
-      <View>
-        <Text style={styles.header}>Food</Text>
-        {renderMenuItems("food")}
-      </View>
-
+        <View>
+          <Text style={styles.header}>Food</Text>
+          {renderMenuItems("food")}
+        </View>
+      </ScrollView>
       {orders.length > 0 && (
-        <Pressable style={styles.totalContainer} onPress={navigateToCart}>
-          <Text style={styles.cartTitle}>Cart | </Text>
-          <View style={styles.cartInfo}>
-            <Text style={styles.cartItems}>
-              {orders.reduce((total, item) => total + item.quantity, 0)} items
-            </Text>
-            <Text style={styles.cartTotal}>
-              Rp.{" "}
-              {orders.reduce(
-                (total, item) => total + item.price * item.quantity,
-                0
-              )}
-            </Text>
-          </View>
-        </Pressable>
+        <View style={styles.cartContainer}>
+          <Pressable style={styles.totalContainer} onPress={navigateToCart}>
+            <Text style={styles.cartTitle}>Cart | </Text>
+            <View style={styles.cartInfo}>
+              <Text style={styles.cartItems}>
+                {orders.reduce((total, item) => total + item.quantity, 0)} items
+              </Text>
+              <Text style={styles.cartTotal}>
+                Rp.{" "}
+                {orders.reduce(
+                  (total, item) => total + item.price * item.quantity,
+                  0
+                )}
+              </Text>
+            </View>
+          </Pressable>
+        </View>
       )}
-    </ScrollView>
+    </SafeAreaView>
   );
 };
 

@@ -98,7 +98,7 @@ const AddMenu = () => {
         Accept: "application/json",
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${token}`,
-        makerID: "47",
+        makerID: "62",
       });
       console.log("FormData:", formData);
 
@@ -116,7 +116,7 @@ const AddMenu = () => {
           Accept: "application/json",
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
-          makerID: "47",
+          makerID: "62",
         },
         timeout: 10000,
       });
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   button: {
-    backgroundColor: "#2196F3",
+    backgroundColor: "#2d3436",
     padding: 10,
     alignItems: "center",
     marginVertical: 10,

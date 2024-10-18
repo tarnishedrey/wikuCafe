@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { Slot, useRouter } from "expo-router";
-import { SafeAreaView, StatusBar } from "react-native";
+import { SafeAreaView, StatusBar, useColorScheme } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Layout = () => {
   const router = useRouter();
+  const colorScheme = useColorScheme();
 
   useEffect(() => {
     const checkAuthAndRedirect = async () => {
@@ -42,7 +43,6 @@ const Layout = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar barStyle="dark-content" />
       <Slot />
     </SafeAreaView>
   );
